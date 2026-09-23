@@ -1,0 +1,54 @@
+{
+  "application_id": "RTI-2026-0001432",
+  "applicant": {
+    "name": "Ramesh Kumar",
+    "phone": "+91-9876543210",
+    "email": "ramesh.k@example.com",
+    "address": "123 MG Road, Nagpur, Maharashtra"
+  },
+  "department": "Public Works Department (PWD)",
+  "pio_id": "PIO-MH-PWD-014",
+  "subject": "Status of road repair complaint on Wardha Road",
+  "description": "Requesting information on action taken on complaint no. 4521 filed on 2026-05-10",
+  "fee_paid": true,
+  "fee_amount": 10,
+  "fee_mode": "online",
+  "filed_date": "2026-07-01",
+  "due_date": "2026-07-31",
+  "status": "overdue",
+  "response_received": false,
+  "appeal_status": "first_appeal_drafted"
+}
+{
+  "pio_id": "PIO-MH-PWD-014",
+  "name": "S. R. Deshmukh",
+  "designation": "Assistant Engineer & PIO",
+  "department": "Public Works Department",
+  "state": "Maharashtra",
+  "district": "Nagpur",
+  "office_address": "PWD Divisional Office, Civil Lines, Nagpur",
+  "email": "pio.pwd.nagpur@mh.gov.in",
+  "phone": "0712-2345678",
+  "appellate_authority": {
+    "name": "R. K. Patil",
+    "designation": "Executive Engineer",
+    "email": "eepwd.nagpur@mh.gov.in"
+  }
+}
+{
+  "event_id": "EVT-9981",
+  "application_id": "RTI-2026-0001432",
+  "type": "deadline_reminder",
+  "trigger_date": "2026-07-28",
+  "message": "3 days left before 30-day RTI deadline expires",
+  "action_suggested": "prepare_first_appeal"
+}
+{
+  "appeal_id": "APP-2026-00087",
+  "application_id": "RTI-2026-0001432",
+  "appeal_level": "first",
+  "filed_date": "2026-08-02",
+  "reason": "No response received within statutory 30-day period",
+  "addressed_to": "R. K. Patil, Executive Engineer (Appellate Authority)",
+  "status": "pending"
+}
