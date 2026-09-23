@@ -1,0 +1,215 @@
+# Automated RTI Info Assistant — README
+
+## Overview
+An **Automated RTI (Right to Information) Assistant** is a tool — usually a chatbot, web app, or workflow automation system — that helps citizens draft, file, track, and understand RTI applications under India's Right to Information Act, 2005 (or equivalent transparency laws in other countries). It reduces the friction of navigating bureaucratic procedures by automating repetitive, rule-based parts of the RTI process.
+
+## Problem It Solves
+Filing an RTI application manually requires knowing:
+- Which Public Information Officer (PIO) / department to address
+- The correct format and mandatory fields
+- Applicable fees and exemptions (e.g., BPL waivers)
+- Timelines (30 days normal, 48 hours for life/liberty matters)
+- Appeal procedures if no response or an unsatisfactory response is received
+
+Most first-time applicants find this confusing. An automated assistant simplifies it.
+
+## Core Features
+1. **Query Understanding** — Takes a plain-language question ("Why hasn't my road repair request been addressed?") and identifies the relevant department/authority.
+2. **Application Drafting** — Auto-generates a properly formatted RTI application with mandatory clauses, addressee details, and applicant info.
+3. **PIO/Department Lookup** — Maintains or fetches a database of Public Information Officers by department/region.
+4. **Fee & Exemption Guidance** — Tells users the correct fee, payment mode, and BPL exemption rules.
+5. **Submission Routing** — Optionally integrates with the RTI Online portal (rtionline.gov.in, Government of India) for direct e-filing, or generates a postable PDF.
+6. **Tracking & Reminders** — Tracks the 30-day statutory deadline and reminds the user to file a First Appeal if no response arrives.
+7. **First/Second Appeal Drafting** — Auto-drafts appeal letters to the appellate authority or Information Commission if the response is delayed, denied, or incomplete.
+8. **Multilingual Support** — Since RTI is used widely in regional contexts, supporting Hindi and other regional languages is a common requirement.
+
+## How It Works — Step by Step
+
+1. **Ask your question** — Type what's bothering you in plain words, like "why hasn't my road repair complaint been answered?" No legal knowledge needed.
+2. **Assistant understands it** — It figures out what you want (status check, new request, or appeal) and which department it belongs to.
+3. **Finds the right officer** — It looks up the correct Public Information Officer (PIO) for that department and area.
+4. **Writes the application** — A properly formatted RTI request is drafted for you, with your details already filled in.
+5. **Tells you the fee** — It shows the correct fee amount, how to pay it, and if you qualify for a waiver (like BPL).
+6. **You submit it** — Download the PDF to post yourself, or submit online if that option is connected.
+7. **Tracks the deadline** — It counts down the 30-day limit (48 hours in urgent cases) and reminds you before it runs out.
+8. **Drafts an appeal if needed** — No reply in time, or a poor reply? It writes a First Appeal for you automatically — and a Second Appeal if that fails too.
+9. **Keeps your record** — Once you get an answer, it's marked resolved and saved, so you always have a history of your requests.
+
+## Typical Architecture
+```
+User Query (chat/voice/form)
+        |
+        v
+Intent & Entity Extraction (NLP)
+        |
+        v
+Department/PIO Lookup (structured DB or scraped govt data)
+        |
+        v
+Template Engine (fills legal RTI format)
+        |
+        v
+Output: PDF/Doc -> Manual post OR API submission to RTI portal
+        |
+        v
+Tracking Module (deadline reminders, status updates)
+```
+
+## Key Components to Build
+
+| Component | Purpose |
+|---|---|
+| NLP/LLM layer | Understand user intent, extract department & subject |
+| PIO Directory | Structured database of departments and information officers |
+| Template Generator | Produces legally compliant RTI application text |
+| Document Export | PDF/Word generation for print or postal filing |
+| Status Tracker | Monitors deadlines, sends reminders |
+| Appeal Module | Drafts First/Second Appeal on non-response |
+
+## Legal Considerations
+- RTI applications must cite the RTI Act, 2005 and follow prescribed formats per state (each Indian state has its own RTI rules with minor format variations).
+- The assistant should **not** provide legal advice — only procedural/drafting assistance — and should clarify this to users.
+- Personal data of applicants should be handled securely; RTI applications often contain PII.
+
+## Possible Tech Stack
+- **Backend**: Python/Node.js
+- **NLP**: An LLM (like Claude) for intent extraction and drafting
+- **Database**: PostgreSQL/MongoDB for PIO directories and application tracking
+- **Frontend**: Web app or WhatsApp/Telegram bot (high reach for citizen-facing tools)
+- **Document generation**: PDF libraries (e.g., reportlab, docx generation)
+
+## Limitations to Flag to Users
+- Cannot guarantee a response from government departments — it only helps file/track requests.
+- State-specific RTI rules vary; the directory needs regular updates.
+- Should not be relied on for time-critical legal deadlines without human double-checking.
+
+## Sample Data Model
+
+### 1. RTI Application
+```json
+{
+  "application_id": "RTI-2026-0001432",
+  "applicant": {
+    "name": "Ramesh Kumar",
+    "phone": "+91-9876543210",
+    "email": "ramesh.k@example.com",
+    "address": "123 MG Road, Nagpur, Maharashtra"
+  },
+  "department": "Public Works Department (PWD)",
+  "pio_id": "PIO-MH-PWD-014",
+  "subject": "Status of road repair complaint on Wardha Road",
+  "description": "Requesting information on action taken on complaint no. 4521 filed on 2026-05-10",
+  "fee_paid": true,
+  "fee_amount": 10,
+  "fee_mode": "online",
+  "filed_date": "2026-07-01",
+  "due_date": "2026-07-31",
+  "status": "overdue",
+  "response_received": false,
+  "appeal_status": "first_appeal_drafted"
+}
+```
+
+### 2. PIO (Public Information Officer) Directory Record
+```json
+{
+  "pio_id": "PIO-MH-PWD-014",
+  "name": "S. R. Deshmukh",
+  "designation": "Assistant Engineer & PIO",
+  "department": "Public Works Department",
+  "state": "Maharashtra",
+  "district": "Nagpur",
+  "office_address": "PWD Divisional Office, Civil Lines, Nagpur",
+  "email": "pio.pwd.nagpur@mh.gov.in",
+  "phone": "0712-2345678",
+  "appellate_authority": {
+    "name": "R. K. Patil",
+    "designation": "Executive Engineer",
+    "email": "eepwd.nagpur@mh.gov.in"
+  }
+}
+```
+
+### 3. Tracking / Reminder Event
+```json
+{
+  "event_id": "EVT-9981",
+  "application_id": "RTI-2026-0001432",
+  "type": "deadline_reminder",
+  "trigger_date": "2026-07-28",
+  "message": "3 days left before 30-day RTI deadline expires",
+  "action_suggested": "prepare_first_appeal"
+}
+```
+
+### 4. Appeal Record
+```json
+{
+  "appeal_id": "APP-2026-00087",
+  "application_id": "RTI-2026-0001432",
+  "appeal_level": "first",
+  "filed_date": "2026-08-02",
+  "reason": "No response received within statutory 30-day period",
+  "addressed_to": "R. K. Patil, Executive Engineer (Appellate Authority)",
+  "status": "pending"
+}
+```
+
+## GitHub Repository Checklist
+
+### Essential Files
+| File | Purpose |
+|---|---|
+| `LICENSE` | Open-source license (MIT is common for civic-tech tools) |
+| `.gitignore` | Excludes `.env`, `node_modules/`, `__pycache__/`, DB dumps, etc. |
+| `CONTRIBUTING.md` | How others can contribute (PR process, coding style, issue templates) |
+| `CODE_OF_CONDUCT.md` | Standard for community/civic-tech projects |
+| `.env.example` | Sample environment variables (API keys, DB URLs) without real secrets |
+
+### Project Structure Files
+- `requirements.txt` / `package.json` — dependency lists
+- `docker-compose.yml` + `Dockerfile` — for easy local setup
+- `/docs` — architecture diagrams, API docs, state-wise RTI format notes
+- `/schemas` — the JSON/SQL schema for the data model above
+- `/tests` — unit tests for the template generator, PIO lookup, etc.
+
+### GitHub-Specific
+- `.github/ISSUE_TEMPLATE/` — bug report & feature request templates
+- `.github/workflows/` — CI/CD (lint/test on every push)
+- `.github/PULL_REQUEST_TEMPLATE.md`
+
+### Civic-Tech Specific
+- `PIO_DATA_SOURCES.md` — where PIO directories are sourced from (govt portals, RTI Online, crowdsourcing) and update frequency
+- `STATE_RULES.md` — table of state-wise RTI fee/format variations
+- `DISCLAIMER.md` — clarifies this is procedural help, not legal advice
+
+### Demo & Onboarding
+- `demo.gif` / `demo.mp4` — short screen recording of the chat flow filing an RTI
+- `SCREENSHOTS.md` or `/assets/screenshots/` — app screens for the README
+- Live demo link (Vercel/Netlify/Render) pinned at the top of the README
+
+### Sample/Seed Data
+- `sample_pio_directory.json` — starter dataset (20-30 PIOs across a couple of states) for testing without scraping
+- `sample_applications.json` — mock filled applications for demos/tests
+- RTI application templates — actual `.docx`/`.pdf` templates per state, since formats vary
+
+### API/Integration Docs
+- `API.md` — documents routes (e.g., `/draft-application`, `/track-status`), request/response shapes
+- `INTEGRATIONS.md` — notes on RTI Online portal quirks, WhatsApp Business API setup, Telegram bot setup
+
+### Governance & Trust
+- `PRIVACY.md` — how applicant PII (name, address, phone) is stored/handled, since this is sensitive government-facing data
+- `SECURITY.md` — how to report vulnerabilities responsibly
+- `ROADMAP.md` — planned features (multilingual support, more states, appeal automation)
+
+### Community/Growth
+- `CHANGELOG.md` — version history once updates start shipping
+- Repo topics/tags: `rti`, `civic-tech`, `india`, `transparency`, `chatbot`
+- A `good-first-issue` label set for new contributors
+
+## Next Steps
+If building this as an actual project, useful next steps include:
+- Scaffolding the app structure
+- Designing the PIO database schema
+- Writing the RTI template generator
+- Setting up the tracking/reminder module
